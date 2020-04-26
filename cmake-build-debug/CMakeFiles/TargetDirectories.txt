@@ -1,0 +1,3 @@
+/home/yuval/CLionProjects/OS_Ex2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/yuval/CLionProjects/OS_Ex2/cmake-build-debug/CMakeFiles/OS_Ex2.dir
+/home/yuval/CLionProjects/OS_Ex2/cmake-build-debug/CMakeFiles/edit_cache.dir

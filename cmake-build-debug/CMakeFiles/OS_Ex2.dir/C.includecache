@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/yuval/CLionProjects/OS_Ex2/ex2.c
+wchar.h
+-
+string.h
+-
+stdio.h
+-
+fcntl.h
+-
+unistd.h
+-
+wait.h
+-
+
