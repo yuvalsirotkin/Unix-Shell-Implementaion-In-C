@@ -1,17 +1,15 @@
 //
 // Created by yuval on 4/25/20.
 //
-//
-// Created by yuval on 4/25/20.
-//
 
-#include <wchar.h>
+
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <wait.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 
 struct process
@@ -21,32 +19,32 @@ struct process
     int done; // 0 = false, 1= true;
 };
 
-void doCommand (char* arr[], int len, int background, int* numberOfProcess, struct process* processArray) ;
 void exitCommand (char* arr[]);
 void execCommand (char* arr[]) ;
 void cdCommand (char* arr[], int len);
-void jobsCommand (char* arr[], int* numberOfProcess, struct process* processArray);
-void historyCommand (char* arr[], int* numberOfProcess, struct process* processArray);
+void jobsCommand (const int* numberOfProcess, struct process* processArray);
+void historyCommand (char* arr[], const int* numberOfProcess, struct process* processArray);
 void checkIfBackground (char* inst, char** arr, int len, int* numberOfProcess, struct process* processArray) ;
 void update(int numberOfProcess, struct process* processArray);
 void forkOrBuiltIn(char* instInString, char* arr[], int len, int* numberOfProcess, struct process* processArray);
+char* removeWhiteSpace(char *str);
 
 
 
 static int stop = 0; // exit = false
 static char* homeDir;
 char prevPath[1000];
+
 int main () {
     int numberOfProcess = 0;
     struct process processArray[100];
 
-
     homeDir = getenv("HOME");
     if (homeDir == NULL) {
-        fprintf(stderr, "Error in system call");;
+        fprintf(stderr, "Error in system call\n");
     }
     if (getcwd(prevPath, sizeof(prevPath)) == NULL) {
-        fprintf(stderr, "Error in system call");;
+        fprintf(stderr, "Error in system call\n");
     }
     while (!stop) {
         char inst[100];
@@ -54,12 +52,11 @@ int main () {
         // scan the instructions from the user
         char* str = (char *)malloc(100 * sizeof(char));
         if (str == NULL) {
-            fprintf(stderr, "Error in system call");
+            fprintf(stderr, "Error in system call\n");
         }
         printf("> ");
         fgets(str,100,stdin);
         strcpy(inst, str);
-
         //remove the "\n" from the string
         str = strtok(str, "\n");
         char *word = strtok (inst, " ");
@@ -79,13 +76,7 @@ int main () {
         i++;
         array[i] = NULL;
         i++;
-
         forkOrBuiltIn(str,array,i, &numberOfProcess, processArray);
-
-
-
-        // i is with the NULL cell - array[i] == NULL
-        //checkIfBackground(str, array, i, &numberOfProcess, processArray);
         // update the process's array
         update(numberOfProcess, processArray);
     }
@@ -110,7 +101,7 @@ void forkOrBuiltIn(char* instInString , char* arr[], int len,  int* numberOfProc
         struct process newP = {instInString, getpid(), 0};
         processArray[*numberOfProcess] = newP;
         (*numberOfProcess)++;
-        jobsCommand(arr, numberOfProcess, processArray);
+        jobsCommand(numberOfProcess, processArray);
     }
     else if (strcmp(arr[0], "history") == 0 ) {
         struct process newP = {instInString, getpid(), 0};
@@ -120,30 +111,12 @@ void forkOrBuiltIn(char* instInString , char* arr[], int len,  int* numberOfProc
     }
     else {
         checkIfBackground(instInString, arr, len, numberOfProcess, processArray);
-        //execCommand(arr);
     }
 
 }
 
 
-//void getCurrDir(char* path, char* substring) {
-//
-//    int begin = 0;
-//    for (int i = 0 ; i < 1000 ; i++) {
-//        if (path[i] == '/') {
-//            begin = i;
-//        } else if (path[i] == '\0') {
-//            break;
-//        }
-//    }
-//    printf("begin is %d\n", begin);
-//    for (int i =0  ; i <= begin ; i++) {
-//        substring[i] = path[i];
-//    }
-//
-//}
-
-void copyStrings(char* dest, char* source) {
+void copyStrings(char* dest,const char* source) {
     // nullify the array
     for (int i = 0 ; i < 1000 ; i++) {
         dest[i] = '\0';
@@ -157,62 +130,62 @@ char* concat(const char *s1, const char *s2)
 {
     char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
     if (result == NULL) {
-        fprintf(stderr, "Error in system call");
+        fprintf(stderr, "Error in system call\n");
     }
     strcpy(result, s1);
     strcat(result, s2);
     return result;
 }
 
+void deleteChar(char* string, int idxToDel) {
+    memmove(&string[idxToDel], &string[idxToDel + 1], strlen(string) - idxToDel);
+
+}
+
 void cdCommand (char* arr[], int len){
     // because of the null in the end of the array- if len == 2 this is just cd without argument
     printf("%d\n", getpid());
     if (len > 3){
-        fprintf(stderr, "Error: Too many arguments");
+        fprintf(stderr, "Error: Too many arguments\n");
     } else {
         if (len == 2 || strcmp(arr[1], "~") == 0 ) {
             if (getcwd(prevPath, sizeof(prevPath)) == NULL) {
-                fprintf(stderr, "Error in system call");
+                fprintf(stderr, "Error in system call\n");
             }
 
             chdir(homeDir);
         }
         else if (arr[1][0]== '~') {
             if (getcwd(prevPath, sizeof(prevPath)) == NULL) {
-                fprintf(stderr, "Error in system call");
+                fprintf(stderr, "Error in system call\n");
             }
-            int idxToDel = 0;
-            memmove(&arr[1][idxToDel], &arr[1][idxToDel + 1], strlen(arr[1]) - idxToDel);
+            deleteChar(arr[1], 0);
             char* newPath = concat(homeDir, arr[1]);
             chdir(newPath);
         }
         else if (strcmp(arr[1], "-") == 0 ) {
             char temp[1000];
             if (getcwd(temp, sizeof(temp)) == NULL) {
-                fprintf(stderr, "Error in system call");;
+                fprintf(stderr, "Error in system call\n");
             }
             chdir(prevPath);
             copyStrings (prevPath,temp);
-            printf ("prev is %s\n" , prevPath);
         }
         else  {
             // temp contain the prev path
             char temp[1000];
             copyStrings (temp, prevPath);
             if (getcwd(prevPath, sizeof(prevPath)) == NULL) {
-                fprintf(stderr, "Error in system call");
+                fprintf(stderr, "Error in system call\n");
             }
                 // prev contain the curr path
             else{
                 if ((chdir(arr[1]) == -1) ) {
-                    fprintf(stderr, "Error: No such file or directory");
+                    fprintf(stderr, "Error: No such file or directory\n");
                     // if there is an error- prev should contain temp;
                     copyStrings(prevPath, temp);
                 }
             }
-            printf ("prev is %s\n" , prevPath);
-
-
         }
     }
 }
@@ -222,6 +195,7 @@ void exitCommand (char* arr[]) {
     printf("%d\n", getpid());
     stop = 1;
 }
+
 
 void checkIfBackground (char* instInString, char* arr[], int len, int* numberOfProcess, struct process* processArray) {
     pid_t val;
@@ -238,21 +212,22 @@ void checkIfBackground (char* instInString, char* arr[], int len, int* numberOfP
     *numberOfProcess = (*numberOfProcess) + 1;
     val = fork();
     if (val == -1) {
-        fprintf(stderr, "Error in system call");
+        fprintf(stderr, "Error in system call\n");
     }
     if (val > 1) { // this is the father
         // insert to the process array before the fork!
-        ///////////////check what to do if this is invalid command//////////
         if (!background) {
             struct process newP = {instInString, val, 0};
             processArray[*numberOfProcess -1] = newP;
         } else {
-            struct process newP = {arrayToExecv, val, 0};
+            deleteChar(instInString, (int) strlen(instInString)-1);
+            struct process newP = {instInString, val, 0};
             processArray[*numberOfProcess -1] = newP;
         }
         if (!background) { // the father need to wait for his son (specific son)
             waitpid(val, &status, 0);
         }
+
     }
 
     if (val == 0) { // this is the son
@@ -267,17 +242,12 @@ void checkIfBackground (char* instInString, char* arr[], int len, int* numberOfP
     // after the father end- continue
 }
 
-int lenIfMarks(char* string) {
-    int i = 0;
-    if (string[0] == '"' && i < 1000) {
-        while (string[i] != '\0') {
-            i++;
-        }
+int checkIfMarks(char* string) {
+    if (string[0] == '\"' && string[strlen(string) -1] == '\"') {
+        return 1;
+    } else {
+        return 0;
     }
-    if (string[i] == '\0') {
-        return i;
-    }
-    return -1;
 }
 
 void removeMarks (char* string, char withoutMarks[], int len) {
@@ -291,12 +261,12 @@ void execCommand(char* arr[]) {
 
     int ret_code;
     if (strcmp(arr[0] , "echo") == 0) {
-        int len = lenIfMarks(arr[1]);
-        if (len == -1) { // there is no ""
+        int haveMarks = checkIfMarks(arr[1]);
+        if (!haveMarks) { // there is no ""
             ret_code = execlp("echo", "echo" ,arr[1], NULL);
         } else {
-            char withoutMarks[len-2];
-            removeMarks(arr[1], withoutMarks, len);
+            char withoutMarks[(int) strlen(arr[1]) - 2];
+            removeMarks(arr[1], withoutMarks, (int) strlen(arr[1]));
             ret_code = execlp("echo", "echo" ,withoutMarks, NULL);
         }
     } else {
@@ -306,7 +276,7 @@ void execCommand(char* arr[]) {
     // if there was no error this code will not be executed
     if (ret_code == -1)
     {
-        fprintf(stderr, "Error in system call");
+        fprintf(stderr, "Error in system call\n");
     }
 
 }
@@ -321,30 +291,24 @@ void update(int numberOfProcess, struct process* processArray){
         if (isAlive != 0) {
             processArray[i].done = 1;
         }
-//        printf("test: procces number: %d, pid: %d, command: %s done: %d\n", i, processArray[i].pid,
-//               processArray[i].command, processArray[i].done);
     }
 }
 
 
-void historyCommand (char** arr, int* numberOfProcess, struct process* processArray) {
+void historyCommand (char** arr, const int* numberOfProcess, struct process* processArray) {
     for (int i = 0; i < *numberOfProcess; i++) {
         if (processArray[i].done) {
             printf("%d %s DONE\n", processArray[i].pid, processArray[i].command);
         } else {
-            printf("%d %s RUNING\n", processArray[i].pid, processArray[i].command);
+            printf("%d %s RUNNING\n", processArray[i].pid, processArray[i].command);
         }
     }
 }
 
-void jobsCommand (char* arr[], int* numberOfProcess, struct process* processArray){
+void jobsCommand (const int* numberOfProcess, struct process* processArray){
     for (int i = 0; i < *numberOfProcess; i++) {
         if (!processArray[i].done && strcmp(processArray[i].command, "jobs") != 0) {
             printf("%d %s\n", processArray[i].pid, processArray[i].command);
         }
     }
 }
-
-
-
-
