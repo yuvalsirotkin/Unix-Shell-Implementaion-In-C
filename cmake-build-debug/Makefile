@@ -123,6 +123,33 @@ OS_Ex2/fast:
 	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/build
 .PHONY : OS_Ex2/fast
 
+Test.o: Test.c.o
+
+.PHONY : Test.o
+
+# target to build an object file
+Test.c.o:
+	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/Test.c.o
+.PHONY : Test.c.o
+
+Test.i: Test.c.i
+
+.PHONY : Test.i
+
+# target to preprocess a source file
+Test.c.i:
+	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/Test.c.i
+.PHONY : Test.c.i
+
+Test.s: Test.c.s
+
+.PHONY : Test.s
+
+# target to generate assembly for a file
+Test.c.s:
+	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/Test.c.s
+.PHONY : Test.c.s
+
 ex2.o: ex2.c.o
 
 .PHONY : ex2.o
@@ -159,6 +186,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... OS_Ex2"
 	@echo "... edit_cache"
+	@echo "... Test.o"
+	@echo "... Test.i"
+	@echo "... Test.s"
 	@echo "... ex2.o"
 	@echo "... ex2.i"
 	@echo "... ex2.s"

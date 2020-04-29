@@ -78,6 +78,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/yuval/CLionProjects/OS_Ex2/Test.c">
+			<Option target="OS_Ex2"/>
+		</Unit>
 		<Unit filename="/home/yuval/CLionProjects/OS_Ex2/ex2.c">
 			<Option target="OS_Ex2"/>
 		</Unit>

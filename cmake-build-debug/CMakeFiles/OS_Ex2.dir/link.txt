@@ -1,1 +1,1 @@
-/usr/bin/cc -g   CMakeFiles/OS_Ex2.dir/ex2.c.o  -o OS_Ex2 
+/usr/bin/cc -g   CMakeFiles/OS_Ex2.dir/ex2.c.o CMakeFiles/OS_Ex2.dir/Test.c.o  -o OS_Ex2 
