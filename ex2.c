@@ -35,6 +35,25 @@ static int stop = 0; // exit = false
 static char* homeDir;
 char prevPath[1000];
 
+char *trimwhitespace(char *string)
+{
+    char *str = strdup(string);
+    char *end;
+
+    // Trim leading space
+    while(isspace((unsigned char)*str)) str++;
+
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while(end > str && isspace((unsigned char)*end)) end--;
+
+    // Write new null terminator character
+    end[1] = '\0';
+
+    return str;
+}
+
 int main () {
     int numberOfProcess = 0;
     struct process processArray[100];
@@ -48,36 +67,33 @@ int main () {
     }
     while (!stop) {
         char inst[100];
-        int i = 0;
         // scan the instructions from the user
-        char* str = (char *)malloc(100 * sizeof(char));
-        if (str == NULL) {
+        char* str1 = (char *)malloc(100 * sizeof(char));
+        if (str1 == NULL) {
             fprintf(stderr, "Error in system call\n");
         }
         printf("> ");
-        fgets(str,100,stdin);
-        while(isspace((unsigned char)* str)) str++;
+        fgets(str1,100,stdin);
+        //while(isspace((unsigned char)* str1)) str1++;
+        char* str =trimwhitespace(str1);
         strcpy(inst, str);
         //remove the "\n" from the string
-        str = strtok(str, "\n");
+        //str = strtok(str, "\n");
         char *word = strtok (inst, " ");
         char *array[100];
-        array[i] = word;
-        int lenUntilNewWord = (int) strlen(word) + 1;
-        // if the last word is not the last argument in the input
-        while (word[strlen(word) - 1] != '\n')
-        {
-            word = strtok (inst + lenUntilNewWord, " ");
-            i = i+1;
-            array[i] = word;
-            lenUntilNewWord += (int) strlen(word) + 1;
+        int size = 0;
+        while (word != NULL){
+            array[size] = word;
+            word = strtok (NULL, " ");
+            size++;
         }
-        // removing the \n from the last cell
-        array[i] = strtok (array[i], "\n");
-        i++;
-        array[i] = NULL;
-        i++;
-        forkOrBuiltIn(str,array,i, &numberOfProcess, processArray);
+        //removing the \n from the last cell
+        array[size-1] = strtok (array[size-1], "\n");
+        array[size] = NULL;
+        size ++;
+        ////// to do - in note echo "   y"
+        printf("main %s\n", array[1]);
+        forkOrBuiltIn(str,array,size, &numberOfProcess, processArray);
         // update the process's array
         update(numberOfProcess, processArray);
     }
@@ -220,13 +236,12 @@ void checkIfBackground (char* instInString, char* arr[], int len, int* numberOfP
         if (!background) {
             struct process newP = {instInString, val, 0};
             processArray[*numberOfProcess -1] = newP;
+            waitpid(val, &status, 0);
         } else {
+            deleteChar(instInString, (int) strlen(instInString)-1);
             deleteChar(instInString, (int) strlen(instInString)-1);
             struct process newP = {instInString, val, 0};
             processArray[*numberOfProcess -1] = newP;
-        }
-        if (!background) { // the father need to wait for his son (specific son)
-            waitpid(val, &status, 0);
         }
 
     }
@@ -252,22 +267,25 @@ int checkIfMarks(char* string) {
 }
 
 void removeMarks (char* string, char withoutMarks[], int len) {
+    printf("without %d\n", len);
     for (int j = 0 ; j < len - 2 ; j++) {
         withoutMarks[j] = string[j+1];
     }
     withoutMarks[len - 2] = '\0';
+    printf("without %s\n", withoutMarks);
 }
 
 void execCommand(char* arr[]) {
-
     int ret_code;
     if (strcmp(arr[0] , "echo") == 0) {
         int haveMarks = checkIfMarks(arr[1]);
         if (!haveMarks) { // there is no ""
             ret_code = execlp("echo", "echo" ,arr[1], NULL);
         } else {
+            printf("arr1 %s\n", arr[1]);
             char withoutMarks[(int) strlen(arr[1]) - 2];
             removeMarks(arr[1], withoutMarks, (int) strlen(arr[1]));
+            printf("without %s\n", withoutMarks);
             ret_code = execlp("echo", "echo" ,withoutMarks, NULL);
         }
     } else {
@@ -278,6 +296,7 @@ void execCommand(char* arr[]) {
     if (ret_code == -1)
     {
         fprintf(stderr, "Error in system call\n");
+        exit(1);
     }
 
 }
