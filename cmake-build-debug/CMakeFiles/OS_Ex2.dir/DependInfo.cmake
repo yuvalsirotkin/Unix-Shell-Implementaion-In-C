@@ -5,7 +5,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
   "/home/yuval/CLionProjects/OS_Ex2/Test.c" "/home/yuval/CLionProjects/OS_Ex2/cmake-build-debug/CMakeFiles/OS_Ex2.dir/Test.c.o"
+  "/home/yuval/CLionProjects/OS_Ex2/backup.c" "/home/yuval/CLionProjects/OS_Ex2/cmake-build-debug/CMakeFiles/OS_Ex2.dir/backup.c.o"
   "/home/yuval/CLionProjects/OS_Ex2/ex2.c" "/home/yuval/CLionProjects/OS_Ex2/cmake-build-debug/CMakeFiles/OS_Ex2.dir/ex2.c.o"
+  "/home/yuval/CLionProjects/OS_Ex2/newBack.c" "/home/yuval/CLionProjects/OS_Ex2/cmake-build-debug/CMakeFiles/OS_Ex2.dir/newBack.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

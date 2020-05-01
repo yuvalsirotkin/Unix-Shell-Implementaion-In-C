@@ -56,6 +56,7 @@ int main () {
         }
         printf("> ");
         fgets(str,100,stdin);
+        while(isspace((unsigned char)* str)) str++;
         strcpy(inst, str);
         //remove the "\n" from the string
         str = strtok(str, "\n");

@@ -48,6 +48,7 @@
 //    }
 //    while (!stop) {
 //        char inst[100];
+//        int i = 0;
 //        // scan the instructions from the user
 //        char* str = (char *)malloc(100 * sizeof(char));
 //        if (str == NULL) {
@@ -55,35 +56,30 @@
 //        }
 //        printf("> ");
 //        fgets(str,100,stdin);
+//        while(isspace((unsigned char)* str)) str++;
 //        strcpy(inst, str);
 //        //remove the "\n" from the string
 //        str = strtok(str, "\n");
 //        char *word = strtok (inst, " ");
 //        char *array[100];
-//        int size = 0;
-//        while (word != NULL){
-//            array[size] = word;
-//            word = strtok (NULL, " ");
-//            size++;
+//        array[i] = word;
+//        int lenUntilNewWord = (int) strlen(word) + 1;
+//        // if the last word is not the last argument in the input
+//        while (word[strlen(word) - 1] != '\n')
+//        {
+//            word = strtok (inst + lenUntilNewWord, " ");
+//            i = i+1;
+//            array[i] = word;
+//            lenUntilNewWord += (int) strlen(word) + 1;
 //        }
-//        //removing the \n from the last cell
-//        array[size-1] = strtok (array[size-1], "\n");
-//        array[size] = NULL;
-//        size ++;
-//
-//        for (int j= 0; j < size; j++) {
-//            printf("%d %d %s\n", size, j, array[j]);
-//        }
-//        forkOrBuiltIn(str,array,size, &numberOfProcess, processArray);
+//        // removing the \n from the last cell
+//        array[i] = strtok (array[i], "\n");
+//        i++;
+//        array[i] = NULL;
+//        i++;
+//        forkOrBuiltIn(str,array,i, &numberOfProcess, processArray);
 //        // update the process's array
 //        update(numberOfProcess, processArray);
-//
-//        for (int i = 0 ; i < 1000 ; i++) {
-//            array[i] = "\0";
-//        }
-//        for (int i = 0 ; i < 100 ; i++) {
-//            inst[i] = '\0';
-//        }
 //    }
 //    return 0;
 //}
@@ -222,12 +218,10 @@
 //    if (val > 1) { // this is the father
 //        // insert to the process array before the fork!
 //        if (!background) {
-//
 //            struct process newP = {instInString, val, 0};
 //            processArray[*numberOfProcess -1] = newP;
 //        } else {
 //            deleteChar(instInString, (int) strlen(instInString)-1);
-//            printf("val is %d\n", val);
 //            struct process newP = {instInString, val, 0};
 //            processArray[*numberOfProcess -1] = newP;
 //        }
@@ -303,7 +297,6 @@
 //
 //
 //void historyCommand (char** arr, const int* numberOfProcess, struct process* processArray) {
-//    printf("num is %d\n", *numberOfProcess);
 //    for (int i = 0; i < *numberOfProcess; i++) {
 //        if (processArray[i].done) {
 //            printf("%d %s DONE\n", processArray[i].pid, processArray[i].command);

@@ -2,55 +2,86 @@
 //// Created by yuval on 4/28/20.
 ////
 //
-//#include <fcntl.h>
-//#include <unistd.h>
-//#include <wait.h>
 //#include <stdio.h>
 //#include <string.h>
 //
+//#include <string.h>
+//#include <stdio.h>
+//#include <fcntl.h>
+//#include <unistd.h>
+//#include <wait.h>
+//#include <stdlib.h>
+//#include <ctype.h>
 //
 //
-//void copyStrings(char* dest, char* source) {
-//    // nullify the array
-//    for (int i = 0 ; i < 1000 ; i++) {
-//        dest[i] = '\0';
-//    }
-//    for (int i =0  ; i < 1000; i++) {
-//        dest[i] = source[i];
+//
+//void deleteChar(char* string, int idxToDel) {
+//    memmove(&string[idxToDel], &string[idxToDel + 1], strlen(string) - idxToDel);
+//
+//}
+//
+//void removeSpacesBefore(char* text){
+//    int c = 0;
+//    while (text[c] != '\0') {
+//        if (text[c] == ' ') {
+//            deleteChar(text, c);
+//        }
 //    }
 //}
 //
-//
-//void removeMarks (char* string, char* withoutMarks) {
-//    printf("%s\n", string);
-//    for (int i = 0 ; i < 100; i++) {
-//        withoutMarks[i] = '\0' ;
-//    }
-//    int i = 0;
-//    if (string[0] == '"'){
-//        while (string[i] != '\0') {
-//            i++;
-//        }
-//        printf("%c\n", string[i -1] );
-//        if (string[i -1] == '"') {
-//            printf("%c\n", string[i -1] );
-//            for (int j = 0 ; j < i - 2 ; j++) {
-//                withoutMarks[j] = string[j+1];
-//            }
-//
-//            copyStrings(string, withoutMarks);
-//        }
-//    }
-//    printf("after %s\n", string);
-//}
 //
 //int main() {
-//    char* arr[2];
-//    arr[0] = "echo";
-//    arr[1] = "\"yu\"";
-//    char withoutMarks[100];
-//    if (strcmp(arr[0] , "echo") == 0) {
-//        removeMarks(arr[1], withoutMarks);
+//    char inst[100];
+//    int i = 0;
+//    // scan the instructions from the user
+//    char* str = (char *)malloc(100 * sizeof(char));
+//    if (str == NULL) {
+//        fprintf(stderr, "Error in system call\n");
 //    }
-////    printf("%s %s %s %s\n", arr[0], arr[1], arr[2], arr[3]);
+//    printf("> ");
+//    fgets(str,100,stdin);
+//    strcpy(inst, str);
+//    char* token;
+//    char* arr[1000];
+//    str = strtok(str, "\n");
+//    token = strtok(str, " ");
+//    int size = 0;
+//    while (token != NULL){
+//        arr[size] = token;
+//        token = strtok (NULL, " ");
+//        size++;
+//    }
+//    for (int j= 0; j < size; j++) {
+//        printf("%s\n", arr[j]);
+//    }
+//
+//
+//
+//
+//
+//
+//
+//
+////    //remove the "\n" from the string
+////    str = strtok(str, "\n");
+////    char *word = strtok (inst, " ");
+////    char *array[100];
+////    array[i] = word;
+////    int lenUntilNewWord = (int) strlen(word) + 1;
+////    // if the last word is not the last argument in the input
+////    while (word[strlen(word) - 1] != '\n')
+////    {
+////        word = strtok (inst + lenUntilNewWord, " ");
+////        i = i+1;
+////        array[i] = word;
+////        lenUntilNewWord += (int) strlen(word) + 1;
+////    }
+////    // removing the \n from the last cell
+////    array[i] = strtok (array[i], "\n");
+////    i++;
+////    array[i] = NULL;
+////    i++;
+////    for (int j= 0; j < i-1; j++) {
+////        printf("%s\n", array[j]);
+////    }
 //}
