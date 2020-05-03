@@ -1,6 +1,32 @@
 ////
 //// Created by yuval on 4/28/20.
 ////
+
+
+
+
+
+
+
+
+//if (!begin && word[strlen(word) -1] != '\"') {
+//strcat(temp, word);
+//} else if (!begin && word[strlen(word) -1] == '\"') {
+//array[size] = temp;
+//size++;
+//begin = 1;
+//}
+//else if (word[0] == '\"' && begin) {
+//begin = 0;
+//strcat(temp, word);
+//} else {
+//array[size] = word;
+//size++;
+//}
+//word = strtok (NULL, " ");
+
+
+
 //
 //#include <stdio.h>
 //#include <string.h>

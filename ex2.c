@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-
+#define MAX_INPUT_SIZE 1000
 struct process
 {
     char* command;
@@ -19,40 +19,20 @@ struct process
     int done; // 0 = false, 1= true;
 };
 
-void exitCommand (char* arr[]);
-void execCommand (char* arr[]) ;
-void cdCommand (char* arr[], int len);
+void exitCommand ();
+void execCommand (char* arr[MAX_INPUT_SIZE], int len) ;
+void cdCommand (char* arr[MAX_INPUT_SIZE], int len);
 void jobsCommand (const int* numberOfProcess, struct process* processArray);
-void historyCommand (char* arr[], const int* numberOfProcess, struct process* processArray);
-void checkIfBackground (char* inst, char** arr, int len, int* numberOfProcess, struct process* processArray) ;
+void historyCommand (char* arr[MAX_INPUT_SIZE], const int* numberOfProcess, struct process* processArray);
+void checkIfBackground (char* inst, char* arr[MAX_INPUT_SIZE], int len, int* numberOfProcess, struct process* processArray) ;
 void update(int numberOfProcess, struct process* processArray);
-void forkOrBuiltIn(char* instInString, char* arr[], int len, int* numberOfProcess, struct process* processArray);
-char* removeWhiteSpace(char *str);
-
+void forkOrBuiltIn(char* instInString, char* arr[MAX_INPUT_SIZE], int len, int* numberOfProcess, struct process* processArray);
+void deleteArrays(char* arr[MAX_INPUT_SIZE], int len);
 
 
 static int stop = 0; // exit = false
 static char* homeDir;
 char prevPath[1000];
-
-char *trimwhitespace(char *string)
-{
-    char *str = strdup(string);
-    char *end;
-
-    // Trim leading space
-    while(isspace((unsigned char)*str)) str++;
-
-
-    // Trim trailing space
-    end = str + strlen(str) - 1;
-    while(end > str && isspace((unsigned char)*end)) end--;
-
-    // Write new null terminator character
-    end[1] = '\0';
-
-    return str;
-}
 
 int main () {
     int numberOfProcess = 0;
@@ -67,41 +47,89 @@ int main () {
     }
     while (!stop) {
         char inst[100];
+        int i,k,sum=0, j=0;
         // scan the instructions from the user
-        char* str1 = (char *)malloc(100 * sizeof(char));
-        if (str1 == NULL) {
+        // need to malloc in order to have different strings in the process array
+        char* input = (char *)malloc(100 * sizeof(char));
+        if (input == NULL) {
             fprintf(stderr, "Error in system call\n");
         }
         printf("> ");
-        fgets(str1,100,stdin);
-        //while(isspace((unsigned char)* str1)) str1++;
-        char* str =trimwhitespace(str1);
-        strcpy(inst, str);
-        //remove the "\n" from the string
-        //str = strtok(str, "\n");
-        char *word = strtok (inst, " ");
-        char *array[100];
-        int size = 0;
-        while (word != NULL){
-            array[size] = word;
-            word = strtok (NULL, " ");
-            size++;
+        // nullify the tokens
+        char tokens[MAX_INPUT_SIZE][MAX_INPUT_SIZE] = {0};
+        fgets(input,100,stdin);
+        // remove the \n from the string
+        input[strlen(input)-1] = 0;
+        // check how many quotation marks there are in the input
+        for (i = 0; i < strlen(input); i++) {
+            if (input[i] == '\"') {
+                sum++;
+            }
         }
-        //removing the \n from the last cell
-        array[size-1] = strtok (array[size-1], "\n");
-        array[size] = NULL;
-        size ++;
-        ////// to do - in note echo "   y"
-        printf("main %s\n", array[1]);
-        forkOrBuiltIn(str,array,size, &numberOfProcess, processArray);
-        // update the process's array
+        if (sum % 2 != 0) {
+            fprintf(stderr, "Error odd number of quotation marks\n");
+            continue;
+        }
+
+        // delete spaces from beginning
+        for (i = 0; i < strlen(input); i++) {
+            if (input[i] != ' ') {
+                break;
+            }
+        }
+
+        for (j = 0, k = 0; i < strlen(input); i++) {
+            // first quotation mark
+            if (input[i] == '\"') {
+                i++;
+                // concatenate the words between the quotation marks
+                while (input[i] != '\"'){
+                    tokens[j][k]=input[i];
+                    i++;
+                    k++;
+                }
+
+                // go to next word
+            } else if (input[i] == ' ') {
+                k=0;
+                j++;
+                for (; i < strlen(input); i++) {
+                    if (input[i] != ' ')break;
+                }
+                i--;
+                // continue concatenating the word
+            } else {
+                tokens[j][k]=input[i];
+                k++;
+            }
+        }
+        char *args[j+2];
+        for (i = 0; i < MAX_INPUT_SIZE - 1; i++) {
+            if (tokens[i][0] != 0) {
+                args[i] = tokens[i];
+            } else {
+                break;
+            }
+        }
+        args[i-1] = strtok (args[i-1], "\n");
+        args[i] = NULL;
+
+        forkOrBuiltIn(input,args,i+1, &numberOfProcess, processArray);
+        // update the process's array - check what done
         update(numberOfProcess, processArray);
+        deleteArrays(args, i+1);
     }
     return 0;
 }
 
+void deleteArrays(char* arr[MAX_INPUT_SIZE], int len) {
+    for (int i=0; i< len ; i++) {
+        arr[i]= 0;
+    }
+}
 
-void forkOrBuiltIn(char* instInString , char* arr[], int len,  int* numberOfProcess, struct process* processArray) {
+
+void forkOrBuiltIn(char* instInString , char* arr[MAX_INPUT_SIZE], int len,  int* numberOfProcess, struct process* processArray) {
     if (strcmp(arr[0], "exit") == 0 ) {
         struct process newP = {instInString, getpid(), 0};
         processArray[*numberOfProcess] = newP;
@@ -143,6 +171,7 @@ void copyStrings(char* dest,const char* source) {
     }
 }
 
+//concat 2 strings wit malloc
 char* concat(const char *s1, const char *s2)
 {
     char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
@@ -154,24 +183,26 @@ char* concat(const char *s1, const char *s2)
     return result;
 }
 
+//delete char from specific index
 void deleteChar(char* string, int idxToDel) {
     memmove(&string[idxToDel], &string[idxToDel + 1], strlen(string) - idxToDel);
 
 }
 
-void cdCommand (char* arr[], int len){
+void cdCommand (char* arr[MAX_INPUT_SIZE], int len){
     // because of the null in the end of the array- if len == 2 this is just cd without argument
     printf("%d\n", getpid());
     if (len > 3){
         fprintf(stderr, "Error: Too many arguments\n");
     } else {
+        // cd without arguments or ~ - go to home
         if (len == 2 || strcmp(arr[1], "~") == 0 ) {
             if (getcwd(prevPath, sizeof(prevPath)) == NULL) {
                 fprintf(stderr, "Error in system call\n");
             }
-
             chdir(homeDir);
         }
+            // ~/path
         else if (arr[1][0]== '~') {
             if (getcwd(prevPath, sizeof(prevPath)) == NULL) {
                 fprintf(stderr, "Error in system call\n");
@@ -180,6 +211,7 @@ void cdCommand (char* arr[], int len){
             char* newPath = concat(homeDir, arr[1]);
             chdir(newPath);
         }
+            // go to previous
         else if (strcmp(arr[1], "-") == 0 ) {
             char temp[1000];
             if (getcwd(temp, sizeof(temp)) == NULL) {
@@ -207,14 +239,15 @@ void cdCommand (char* arr[], int len){
     }
 }
 
-
-void exitCommand (char* arr[]) {
+//exit - stop while loop in main
+void exitCommand () {
     printf("%d\n", getpid());
     stop = 1;
 }
 
 
-void checkIfBackground (char* instInString, char* arr[], int len, int* numberOfProcess, struct process* processArray) {
+void checkIfBackground (char* instInString, char* arr[MAX_INPUT_SIZE], int len, int* numberOfProcess,
+                        struct process* processArray) {
     pid_t val;
     int status;
     int background = (strcmp(arr[len-2], "&") == 0); // 1 if background
@@ -249,45 +282,20 @@ void checkIfBackground (char* instInString, char* arr[], int len, int* numberOfP
     if (val == 0) { // this is the son
         printf("%d\n", getpid());
         if (background) {
-            execCommand(arrayToExecv);
+            execCommand(arrayToExecv, len);
         } else {
-            execCommand(arr);
+            execCommand(arr, len);
         }
     }
     //else- this is foreground and this is the father -continue
     // after the father end- continue
 }
 
-int checkIfMarks(char* string) {
-    if (string[0] == '\"' && string[strlen(string) -1] == '\"') {
-        return 1;
-    } else {
-        return 0;
-    }
-}
 
-void removeMarks (char* string, char withoutMarks[], int len) {
-    printf("without %d\n", len);
-    for (int j = 0 ; j < len - 2 ; j++) {
-        withoutMarks[j] = string[j+1];
-    }
-    withoutMarks[len - 2] = '\0';
-    printf("without %s\n", withoutMarks);
-}
-
-void execCommand(char* arr[]) {
+void execCommand(char* arr[MAX_INPUT_SIZE], int len) {
     int ret_code;
     if (strcmp(arr[0] , "echo") == 0) {
-        int haveMarks = checkIfMarks(arr[1]);
-        if (!haveMarks) { // there is no ""
-            ret_code = execlp("echo", "echo" ,arr[1], NULL);
-        } else {
-            printf("arr1 %s\n", arr[1]);
-            char withoutMarks[(int) strlen(arr[1]) - 2];
-            removeMarks(arr[1], withoutMarks, (int) strlen(arr[1]));
-            printf("without %s\n", withoutMarks);
-            ret_code = execlp("echo", "echo" ,withoutMarks, NULL);
-        }
+        ret_code = execvp("echo", arr);
     } else {
         ret_code= execvp((char* const) arr[0], (char *const *) arr);
     }
@@ -315,7 +323,7 @@ void update(int numberOfProcess, struct process* processArray){
 }
 
 
-void historyCommand (char** arr, const int* numberOfProcess, struct process* processArray) {
+void historyCommand (char* arr[MAX_INPUT_SIZE], const int* numberOfProcess, struct process* processArray) {
     for (int i = 0; i < *numberOfProcess; i++) {
         if (processArray[i].done) {
             printf("%d %s DONE\n", processArray[i].pid, processArray[i].command);
