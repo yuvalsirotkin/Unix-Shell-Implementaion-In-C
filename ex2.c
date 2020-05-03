@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <wait.h>
 #include <stdlib.h>
-#include <ctype.h>
 
 #define MAX_INPUT_SIZE 1000
 struct process
@@ -233,6 +232,7 @@ void cdCommand (char* arr[MAX_INPUT_SIZE], int len){
                     fprintf(stderr, "Error: No such file or directory\n");
                     // if there is an error- prev should contain temp;
                     copyStrings(prevPath, temp);
+                    exit(0);
                 }
             }
         }

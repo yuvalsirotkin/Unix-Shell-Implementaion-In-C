@@ -1,8 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/OS_Ex2.dir/Test.c.o"
-  "CMakeFiles/OS_Ex2.dir/backup.c.o"
   "CMakeFiles/OS_Ex2.dir/ex2.c.o"
-  "CMakeFiles/OS_Ex2.dir/newBack.c.o"
   "OS_Ex2"
   "OS_Ex2.pdb"
 )

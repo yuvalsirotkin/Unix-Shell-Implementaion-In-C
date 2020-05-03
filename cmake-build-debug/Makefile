@@ -123,60 +123,6 @@ OS_Ex2/fast:
 	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/build
 .PHONY : OS_Ex2/fast
 
-Test.o: Test.c.o
-
-.PHONY : Test.o
-
-# target to build an object file
-Test.c.o:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/Test.c.o
-.PHONY : Test.c.o
-
-Test.i: Test.c.i
-
-.PHONY : Test.i
-
-# target to preprocess a source file
-Test.c.i:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/Test.c.i
-.PHONY : Test.c.i
-
-Test.s: Test.c.s
-
-.PHONY : Test.s
-
-# target to generate assembly for a file
-Test.c.s:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/Test.c.s
-.PHONY : Test.c.s
-
-backup.o: backup.c.o
-
-.PHONY : backup.o
-
-# target to build an object file
-backup.c.o:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/backup.c.o
-.PHONY : backup.c.o
-
-backup.i: backup.c.i
-
-.PHONY : backup.i
-
-# target to preprocess a source file
-backup.c.i:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/backup.c.i
-.PHONY : backup.c.i
-
-backup.s: backup.c.s
-
-.PHONY : backup.s
-
-# target to generate assembly for a file
-backup.c.s:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/backup.c.s
-.PHONY : backup.c.s
-
 ex2.o: ex2.c.o
 
 .PHONY : ex2.o
@@ -204,33 +150,6 @@ ex2.c.s:
 	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/ex2.c.s
 .PHONY : ex2.c.s
 
-newBack.o: newBack.c.o
-
-.PHONY : newBack.o
-
-# target to build an object file
-newBack.c.o:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/newBack.c.o
-.PHONY : newBack.c.o
-
-newBack.i: newBack.c.i
-
-.PHONY : newBack.i
-
-# target to preprocess a source file
-newBack.c.i:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/newBack.c.i
-.PHONY : newBack.c.i
-
-newBack.s: newBack.c.s
-
-.PHONY : newBack.s
-
-# target to generate assembly for a file
-newBack.c.s:
-	$(MAKE) -f CMakeFiles/OS_Ex2.dir/build.make CMakeFiles/OS_Ex2.dir/newBack.c.s
-.PHONY : newBack.c.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -240,18 +159,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... OS_Ex2"
 	@echo "... edit_cache"
-	@echo "... Test.o"
-	@echo "... Test.i"
-	@echo "... Test.s"
-	@echo "... backup.o"
-	@echo "... backup.i"
-	@echo "... backup.s"
 	@echo "... ex2.o"
 	@echo "... ex2.i"
 	@echo "... ex2.s"
-	@echo "... newBack.o"
-	@echo "... newBack.i"
-	@echo "... newBack.s"
 .PHONY : help
 
 
